@@ -1,8 +1,8 @@
-name: Auto merge PRs at 23:00 KST
+name: Merge all non-conflicting PRs at 23:00 KST
 
 on:
   schedule:
-    - cron: "0 14 * * *"
+    - cron: "0 14 * * *" # KST 23:00
   workflow_dispatch:
 
 permissions:
@@ -11,11 +11,13 @@ permissions:
 
 jobs:
   merge:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
-      - name: Auto-merge pull requests
-        uses: pascalgn/automerge-action@v0.16.3
+      - name: Merge non-conflicting PRs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGE_METHOD: squash
-          MERGE_FORKS: true
+        run: |
+          prs=$(gh pr list --state open --json number,mergeable --jq '.[] | select(.mergeable==true) | .number')
+          for pr in $prs; do
+            gh pr merge $pr --squash --admin
+          done
