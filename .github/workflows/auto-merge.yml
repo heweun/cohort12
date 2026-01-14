@@ -2,8 +2,12 @@ name: Auto merge PRs at 23:00 KST
 
 on:
   schedule:
-    - cron: "0 14 * * *" # UTC 14 = KST 23시
+    - cron: "0 14 * * *"
   workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   merge:
@@ -14,7 +18,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_METHOD: squash
-          MERGE_LABELS: ""
-          MERGE_FILTER_AUTHOR: ""
           MERGE_FORKS: true
-          MERGE_DELETE_BRANCH: false
